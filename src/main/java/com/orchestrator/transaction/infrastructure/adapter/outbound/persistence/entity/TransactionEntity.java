@@ -56,7 +56,7 @@ public class TransactionEntity {
     @Column(name = "processed_at", nullable = false)
     private Instant processedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "customer_id", nullable = false)
     private CustomerEntity customer;
 }
