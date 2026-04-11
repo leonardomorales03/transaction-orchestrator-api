@@ -38,8 +38,29 @@ public class TransactionServiceInitialStatePropertiesTest {
         
         // Usamos un capturador para interceptar la Transaction exacta que se pasa al repository.save()
         ArgumentCaptor<Transaction> transactionCaptor = ArgumentCaptor.forClass(Transaction.class);
-        when(repositoryMock.save(transactionCaptor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
+        
+        // Simulamos que el save() crea un CLON de la transacción para evitar que el estado PROCESSING
+        // sobreescriba el objeto que capturamos en memoria
+        when(repositoryMock.save(transactionCaptor.capture())).thenAnswer(invocation -> {
+            Transaction inputTx = invocation.getArgument(0);
+            return Transaction.builder()
+                    .transactionId(inputTx.getTransactionId())
+                    .clientTransactionId(inputTx.getClientTransactionId())
+                    .amount(inputTx.getAmount())
+                    .currency(inputTx.getCurrency())
+                    .country(inputTx.getCountry())
+                    .paymentMethodId(inputTx.getPaymentMethodId())
+                    .webhookUrl(inputTx.getWebhookUrl())
+                    .redirectUrl(inputTx.getRedirectUrl())
+                    .description(inputTx.getDescription())
+                    .expirationTime(inputTx.getExpirationTime())
+                    .status(inputTx.getStatus())
+                    .processedAt(inputTx.getProcessedAt())
+                    .customer(inputTx.getCustomer())
+                    .build();
+        });
 
+        // Act
         service.createTransaction(command);
         Transaction capturedTransaction = transactionCaptor.getValue();
         

@@ -13,7 +13,7 @@ public class TransactionValidator {
 
     private static final Pattern CURRENCY_PATTERN = Pattern.compile("^[A-Z]{3}$");
     private static final Pattern COUNTRY_PATTERN = Pattern.compile("^[A-Z]{2}$");
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.[a-zA-Z]{2,}$");
     private static final Pattern DIGITS_PATTERN = Pattern.compile("^\\d+$");
 
     public static void validate(CreateTransactionCommand command) {

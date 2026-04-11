@@ -112,12 +112,13 @@ class TransactionValidatorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"plainaddress", "@missingusername.com", "username@.com", "username@domain..com"})
+    @ValueSource(strings = {"plainaddress", "@missingusername.com", "username@.com", "username@domain..com", "testexample.com", "test@"})
     @DisplayName("Debe lanzar InvalidFormatException si el email tiene formato inválido")
     void shouldThrowExceptionWhenEmailIsInvalid(String invalidEmail) {
         validCommand.getCustomer().setEmail(invalidEmail);
         InvalidFormatException exception = assertThrows(InvalidFormatException.class, 
-                () -> TransactionValidator.validate(validCommand));
+                () -> TransactionValidator.validate(validCommand),
+                "Expected InvalidFormatException for email: " + invalidEmail);
         assertEquals("002", exception.getResponseCode());
         assertEquals("email tiene un formato inválido", exception.getMessage());
     }
