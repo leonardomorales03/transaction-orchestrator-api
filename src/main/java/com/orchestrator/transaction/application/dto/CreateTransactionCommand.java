@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+
 import java.time.Instant;
 
 /**
@@ -17,7 +17,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class CreateTransactionCommand {
     private String clientTransactionId;
-    private BigDecimal amount;
+    private Long amount;
     private String currency;
     private String country;
     private String paymentMethodId;

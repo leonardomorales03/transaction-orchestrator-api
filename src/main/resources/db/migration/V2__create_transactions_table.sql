@@ -1,7 +1,7 @@
 CREATE TABLE transactions (
     transaction_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     client_transaction_id VARCHAR(255) NOT NULL UNIQUE,
-    amount DECIMAL(19, 4) NOT NULL CHECK (amount > 0),
+    amount BIGINT NOT NULL CHECK (amount > 0),
     currency VARCHAR(3) NOT NULL,
     country VARCHAR(2) NOT NULL,
     payment_method_id VARCHAR(255) NOT NULL,

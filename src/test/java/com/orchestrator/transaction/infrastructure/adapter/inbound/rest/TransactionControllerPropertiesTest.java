@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
 
-import java.math.BigDecimal;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -78,7 +78,7 @@ public class TransactionControllerPropertiesTest {
     @Provide
     Arbitrary<CreateTransactionRequest> validRequests() {
         Arbitrary<String> stringArb = Arbitraries.strings().alpha().ofMinLength(5).ofMaxLength(15);
-        Arbitrary<BigDecimal> amountArb = Arbitraries.bigDecimals().between(new BigDecimal("1"), new BigDecimal("1000"));
+        Arbitrary<Long> amountArb = Arbitraries.longs().between(1L, 10000000L);
         
         return Combinators.combine(stringArb, amountArb).as((str, amount) -> {
             CustomerDto customer = new CustomerDto();

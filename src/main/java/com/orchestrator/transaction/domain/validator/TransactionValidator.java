@@ -5,7 +5,7 @@ import com.orchestrator.transaction.application.dto.CustomerDto;
 import com.orchestrator.transaction.domain.exception.InvalidFormatException;
 import com.orchestrator.transaction.domain.exception.MissingFieldException;
 
-import java.math.BigDecimal;
+
 import java.time.Instant;
 import java.util.regex.Pattern;
 
@@ -65,7 +65,7 @@ public class TransactionValidator {
         validateMaxLength(customer.getPhoneNumber(), 255, "customer.phoneNumber");
 
         // Formatos específicos
-        if (command.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+        if (command.getAmount() <= 0L) {
             throw new InvalidFormatException("amount debe ser mayor a 0");
         }
 

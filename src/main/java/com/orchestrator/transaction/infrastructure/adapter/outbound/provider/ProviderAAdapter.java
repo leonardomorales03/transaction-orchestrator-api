@@ -17,6 +17,11 @@ public class ProviderAAdapter implements PaymentProviderPort {
         
         simulateNetworkDelay();
 
+        if (transaction.getAmount() == 999999L) {
+            log.warn("Respuesta recibida de Provider A: Rechazada (Fondos Insuficientes)");
+            return new ProviderResponse(false, "Insufficient funds");
+        }
+
         log.info("Respuesta recibida de Provider A: Aprobada");
         return new ProviderResponse(true, "Transaction approved by Provider A");
     }

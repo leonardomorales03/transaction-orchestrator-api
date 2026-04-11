@@ -9,7 +9,7 @@ import com.orchestrator.transaction.domain.port.outbound.TransactionRepository;
 import net.jqwik.api.*;
 import org.mockito.Mockito;
 
-import java.math.BigDecimal;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -49,7 +49,7 @@ public class TransactionServiceUnsupportedProviderPropertiesTest {
     @Provide
     Arbitrary<CreateTransactionCommand> validCommandsWithRandomProviders() {
         Arbitrary<String> clientTxnIdArb = Arbitraries.strings().alpha().ofMinLength(5).ofMaxLength(20);
-        Arbitrary<BigDecimal> amountArb = Arbitraries.bigDecimals().between(new BigDecimal("1.00"), new BigDecimal("10000.00"));
+        Arbitrary<Long> amountArb = Arbitraries.longs().between(1L, 10000000L);
         
         // Generamos Strings completamente aleatorios para simular métodos de pago no soportados o mal escritos
         Arbitrary<String> randomProviderArb = Arbitraries.strings().alpha().ofMinLength(1).ofMaxLength(15);

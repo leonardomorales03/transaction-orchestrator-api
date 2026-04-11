@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.orchestrator.transaction.application.dto.CustomerDto;
 import lombok.Data;
 
-import java.math.BigDecimal;
+
 import java.time.Instant;
 
 @Data
@@ -13,7 +13,7 @@ public class CreateTransactionRequest {
     @JsonProperty("client_transaction_id")
     private String clientTransactionId;
     
-    private BigDecimal amount;
+    private Long amount;
     private String currency;
     private String country;
     

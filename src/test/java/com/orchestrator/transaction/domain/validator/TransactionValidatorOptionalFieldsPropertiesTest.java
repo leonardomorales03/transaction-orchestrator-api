@@ -5,7 +5,7 @@ import com.orchestrator.transaction.application.dto.CustomerDto;
 import net.jqwik.api.*;
 import org.junit.jupiter.api.Assertions;
 
-import java.math.BigDecimal;
+
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -56,7 +56,7 @@ public class TransactionValidatorOptionalFieldsPropertiesTest {
 
             return CreateTransactionCommand.builder()
                     .clientTransactionId("txn-123")
-                    .amount(new BigDecimal("100.00"))
+                    .amount(10000L)
                     .currency("USD")
                     .country("US")
                     .paymentMethodId("VISA")

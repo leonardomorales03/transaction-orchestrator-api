@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -19,7 +19,7 @@ public class Transaction {
     private String clientTransactionId;
 
     // Detalles financieros
-    private BigDecimal amount;
+    private Long amount;
     private String currency;
     private String country;
 

@@ -12,7 +12,7 @@ import net.jqwik.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import java.math.BigDecimal;
+
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -76,7 +76,7 @@ public class TransactionServiceInitialStatePropertiesTest {
     Arbitrary<CreateTransactionCommand> validTransactionCommands() {
         // Generadores para crear comandos 100% válidos aleatorios
         Arbitrary<String> clientTxnIdArb = Arbitraries.strings().alpha().ofMinLength(5).ofMaxLength(20);
-        Arbitrary<BigDecimal> amountArb = Arbitraries.bigDecimals().between(new BigDecimal("1.00"), new BigDecimal("10000.00"));
+        Arbitrary<Long> amountArb = Arbitraries.longs().between(1L, 10000000L);
         Arbitrary<String> currencyArb = Arbitraries.strings().withCharRange('A', 'Z').ofLength(3);
         Arbitrary<String> countryArb = Arbitraries.strings().withCharRange('A', 'Z').ofLength(2);
         Arbitrary<String> providerArb = Arbitraries.of("VISA", "MASTERCARD", "PSE");
