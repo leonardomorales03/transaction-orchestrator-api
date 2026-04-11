@@ -87,6 +87,15 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error("002", "Formato de petición JSON inválido"));
     }
 
+    @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<Void>> handleTypeMismatch(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex) {
+        log.warn("Tipo de argumento inválido en URL: {}", ex.getMessage());
+        // Cuando se envía un UUID inválido en el path
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error("002", "Formato de identificador inválido en la ruta"));
+    }
+
     // --- 3. Excepción Genérica (Catch-all) ---
 
     @ExceptionHandler(Exception.class)
