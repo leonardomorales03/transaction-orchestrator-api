@@ -211,7 +211,7 @@ public class TransactionIntegrationTest extends BaseIntegrationTest {
         request.setAmount(new BigDecimal("100.00"));
         request.setCurrency("USD");
         request.setCountry("US");
-        request.setPaymentMethodId("VISA");
+        request.setPaymentMethodId("CARD_VISA");
         request.setWebhookUrl("https://my-webhook.com");
         request.setRedirectUrl("https://my-redirect.com");
         request.setCustomer(customerDto);
