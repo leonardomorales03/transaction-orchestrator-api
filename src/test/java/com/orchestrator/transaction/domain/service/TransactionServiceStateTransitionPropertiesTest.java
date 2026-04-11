@@ -13,7 +13,7 @@ import com.orchestrator.transaction.domain.port.outbound.TransactionRepository;
 import net.jqwik.api.*;
 import org.mockito.Mockito;
 
-import java.math.BigDecimal;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -79,7 +79,7 @@ public class TransactionServiceStateTransitionPropertiesTest {
     @Provide
     Arbitrary<CreateTransactionCommand> validTransactionCommands() {
         Arbitrary<String> clientTxnIdArb = Arbitraries.strings().alpha().ofMinLength(5).ofMaxLength(20);
-        Arbitrary<BigDecimal> amountArb = Arbitraries.bigDecimals().between(new BigDecimal("1.00"), new BigDecimal("10000.00"));
+        Arbitrary<Long> amountArb = Arbitraries.longs().between(1L, 10000000L);
         Arbitrary<String> providerArb = Arbitraries.of("VISA", "MASTERCARD", "PSE");
 
         return Combinators.combine(

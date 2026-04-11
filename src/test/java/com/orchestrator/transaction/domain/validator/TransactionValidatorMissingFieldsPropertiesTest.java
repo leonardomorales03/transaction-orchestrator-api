@@ -5,7 +5,7 @@ import com.orchestrator.transaction.application.dto.CustomerDto;
 import com.orchestrator.transaction.domain.exception.MissingFieldException;
 import net.jqwik.api.*;
 
-import java.math.BigDecimal;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -82,7 +82,7 @@ public class TransactionValidatorMissingFieldsPropertiesTest {
 
         return CreateTransactionCommand.builder()
                 .clientTransactionId("txn-123")
-                .amount(new BigDecimal("100.00"))
+                .amount(10000L)
                 .currency("USD")
                 .country("US")
                 .paymentMethodId("VISA")

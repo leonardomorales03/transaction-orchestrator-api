@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.math.BigDecimal;
+
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -32,7 +32,7 @@ class TransactionValidatorTest {
 
         validCommand = CreateTransactionCommand.builder()
                 .clientTransactionId("txn-123")
-                .amount(new BigDecimal("100.00"))
+                .amount(10000L)
                 .currency("USD")
                 .country("US")
                 .paymentMethodId("VISA")
@@ -68,10 +68,10 @@ class TransactionValidatorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"0", "-1", "-100.50"})
+    @ValueSource(longs = {0L, -1L, -100L})
     @DisplayName("Debe lanzar InvalidFormatException si el monto es menor o igual a cero")
-    void shouldThrowExceptionWhenAmountIsInvalid(String invalidAmount) {
-        validCommand.setAmount(new BigDecimal(invalidAmount));
+    void shouldThrowExceptionWhenAmountIsInvalid(Long invalidAmount) {
+        validCommand.setAmount(invalidAmount);
         InvalidFormatException exception = assertThrows(InvalidFormatException.class, 
                 () -> TransactionValidator.validate(validCommand));
         assertEquals("002", exception.getResponseCode());

@@ -20,7 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -63,7 +63,7 @@ class TransactionControllerTest {
 
         validRequest = new CreateTransactionRequest();
         validRequest.setClientTransactionId("txn-123");
-        validRequest.setAmount(new BigDecimal("100.00"));
+        validRequest.setAmount(10000L);
         validRequest.setCurrency("USD");
         validRequest.setCountry("US");
         validRequest.setPaymentMethodId("VISA");

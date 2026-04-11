@@ -4,7 +4,7 @@ import com.orchestrator.transaction.domain.model.TransactionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -26,7 +26,7 @@ public class TransactionEntity {
     private String clientTransactionId;
 
     @Column(name = "amount", nullable = false, precision = 19, scale = 4)
-    private BigDecimal amount;
+    private Long amount;
 
     @Column(name = "currency", nullable = false, length = 3)
     private String currency;

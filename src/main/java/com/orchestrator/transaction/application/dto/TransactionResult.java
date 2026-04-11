@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -26,7 +26,7 @@ public class TransactionResult {
     @JsonProperty("client_transaction_id")
     private String clientTransactionId;
     
-    private BigDecimal amount;
+    private Long amount;
     private String currency;
     private TransactionStatus status;
     

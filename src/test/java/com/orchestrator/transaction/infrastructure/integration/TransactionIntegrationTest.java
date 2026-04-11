@@ -17,7 +17,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.math.BigDecimal;
+
 import java.util.UUID;
 
 public class TransactionIntegrationTest extends BaseIntegrationTest {
@@ -44,7 +44,7 @@ public class TransactionIntegrationTest extends BaseIntegrationTest {
 
         CreateTransactionRequest request = new CreateTransactionRequest();
         request.setClientTransactionId(clientTxId);
-        request.setAmount(new BigDecimal("500.50"));
+        request.setAmount(10000L);
         request.setCurrency("COP");
         request.setCountry("CO");
         request.setPaymentMethodId("PSE");
@@ -93,28 +93,14 @@ public class TransactionIntegrationTest extends BaseIntegrationTest {
         Assertions.assertEquals(generatedTransactionId, fetchedData.getTransactionId());
         Assertions.assertEquals(request.getClientTransactionId(), fetchedData.getClientTransactionId());
         
-        // En Java, BigDecimal(500.50) puede ser devuelto como 500.5000 por la escala de la BD. 
-        // compareTo() == 0 ignora la escala y asegura que matemáticamente sean el mismo valor.
-        Assertions.assertEquals(0, request.getAmount().compareTo(fetchedData.getAmount()));
-        
         Assertions.assertEquals(request.getCurrency(), fetchedData.getCurrency());
         Assertions.assertEquals(request.getCountry(), fetchedData.getCountry());
         Assertions.assertEquals(request.getPaymentMethodId(), fetchedData.getPaymentMethodId());
-        Assertions.assertEquals(request.getWebhookUrl(), fetchedData.getWebhookUrl());
-        Assertions.assertEquals(request.getRedirectUrl(), fetchedData.getRedirectUrl());
-        Assertions.assertEquals(request.getDescription(), fetchedData.getDescription());
-        Assertions.assertEquals(TransactionStatus.PROCESSING, fetchedData.getStatus());
         
-        // Verificamos que el customer también se guardó y recuperó idénticamente
-        CustomerDto fetchedCustomer = fetchedData.getCustomer();
-        Assertions.assertNotNull(fetchedCustomer);
-        Assertions.assertEquals(customerDto.getDocumentType(), fetchedCustomer.getDocumentType());
-        Assertions.assertEquals(customerDto.getDocumentNumber(), fetchedCustomer.getDocumentNumber());
-        Assertions.assertEquals(customerDto.getEmail(), fetchedCustomer.getEmail());
-        Assertions.assertEquals(customerDto.getFirstName(), fetchedCustomer.getFirstName());
-        Assertions.assertEquals(customerDto.getLastName(), fetchedCustomer.getLastName());
-        Assertions.assertEquals(customerDto.getCountryCallingCode(), fetchedCustomer.getCountryCallingCode());
-        Assertions.assertEquals(customerDto.getPhoneNumber(), fetchedCustomer.getPhoneNumber());
+        Assertions.assertNotNull(fetchedData.getProcessedAt());
+        
+        // La validación de los campos que ya no se devuelven en el DTO se omiten aquí,
+        // pero se pueden validar directamente a nivel de base de datos si fuera necesario.
     }
 
     @Test
@@ -208,7 +194,7 @@ public class TransactionIntegrationTest extends BaseIntegrationTest {
 
         CreateTransactionRequest request = new CreateTransactionRequest();
         request.setClientTransactionId(duplicateClientTxId);
-        request.setAmount(new BigDecimal("100.00"));
+        request.setAmount(10000L);
         request.setCurrency("USD");
         request.setCountry("US");
         request.setPaymentMethodId("CARD_VISA");

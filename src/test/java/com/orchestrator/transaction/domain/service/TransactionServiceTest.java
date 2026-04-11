@@ -22,7 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
+
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -64,7 +64,7 @@ class TransactionServiceTest {
 
         validCommand = CreateTransactionCommand.builder()
                 .clientTransactionId("txn-123")
-                .amount(new BigDecimal("100.00"))
+                .amount(10000L)
                 .currency("USD")
                 .country("US")
                 .paymentMethodId("VISA")
@@ -84,7 +84,7 @@ class TransactionServiceTest {
         sampleTransaction = Transaction.builder()
                 .transactionId(sampleId)
                 .clientTransactionId("txn-123")
-                .amount(new BigDecimal("100.00"))
+                .amount(10000L)
                 .currency("USD")
                 .country("US")
                 .paymentMethodId("VISA")

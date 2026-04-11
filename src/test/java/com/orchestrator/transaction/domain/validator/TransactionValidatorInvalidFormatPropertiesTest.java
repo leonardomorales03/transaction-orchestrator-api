@@ -5,7 +5,7 @@ import com.orchestrator.transaction.application.dto.CustomerDto;
 import com.orchestrator.transaction.domain.exception.InvalidFormatException;
 import net.jqwik.api.*;
 
-import java.math.BigDecimal;
+
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -60,8 +60,8 @@ public class TransactionValidatorInvalidFormatPropertiesTest {
         CustomerDto customer = command.getCustomer();
 
         switch (invalidType) {
-            case "amount_zero" -> command.setAmount(BigDecimal.ZERO);
-            case "amount_negative" -> command.setAmount(new BigDecimal("-10.50"));
+            case "amount_zero" -> command.setAmount(0L);
+            case "amount_negative" -> command.setAmount(-50L);
             
             case "currency_lowercase" -> command.setCurrency("usd");
             case "currency_toolong" -> command.setCurrency("USDD");
@@ -99,7 +99,7 @@ public class TransactionValidatorInvalidFormatPropertiesTest {
 
         return CreateTransactionCommand.builder()
                 .clientTransactionId("txn-123")
-                .amount(new BigDecimal("100.00"))
+                .amount(10000L)
                 .currency("USD")
                 .country("US")
                 .paymentMethodId("VISA")
