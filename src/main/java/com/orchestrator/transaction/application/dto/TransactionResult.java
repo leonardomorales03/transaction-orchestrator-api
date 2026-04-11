@@ -1,5 +1,6 @@
 package com.orchestrator.transaction.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.orchestrator.transaction.domain.model.TransactionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,10 +19,17 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransactionResult {
+    
+    @JsonProperty("transaction_id")
     private UUID transactionId;
+    
+    @JsonProperty("client_transaction_id")
     private String clientTransactionId;
+    
     private BigDecimal amount;
     private String currency;
     private TransactionStatus status;
+    
+    @JsonProperty("processed_at")
     private Instant processedAt;
 }
