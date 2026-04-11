@@ -110,6 +110,58 @@ graph LR
 6.  **Patrón Factory para Proveedores de Pago:**
     La selección del proveedor de pago (Visa, PSE, etc.) se realiza mediante un `PaymentProviderFactory`. Esto sigue el principio Abierto/Cerrado (OCP) de SOLID: agregar un nuevo proveedor solo requiere crear un nuevo adaptador que implemente `PaymentProviderPort`, sin modificar el servicio central de transacciones.
 
+## 🛠 Patrones de Diseño Aplicados
+
+Durante el desarrollo de esta solución se implementaron los siguientes patrones de diseño y principios de ingeniería:
+
+1. **Hexagonal Architecture (Ports & Adapters):** Permite aislar la lógica de negocio (Dominio) de los detalles técnicos (Bases de datos, APIs externas, Frameworks).
+2. **Factory Method:** Se utilizó `PaymentProviderFactory` para instanciar y seleccionar dinámicamente el proveedor de pagos correcto en tiempo de ejecución basado en el `payment_method_id` recibido.
+3. **Adapter Pattern:** Cada integración con un proveedor externo (Visa, PSE) se encapsula en una clase Adapter (ej. `ProviderAAdapter`), la cual traduce la interfaz genérica del dominio (`PaymentProviderPort`) al formato específico del proveedor.
+4. **Dependency Injection (DI) & Inversion of Control (IoC):** Las dependencias son inyectadas a través de constructores, y la configuración de los beans se realiza manualmente (`BeanConfig`) para que el dominio no dependa de las anotaciones de Spring Boot.
+5. **CQRS (Command/Query Responsibility Segregation):** Se separaron los modelos de escritura (`CreateTransactionCommand`) de los modelos de lectura, asegurando que las validaciones y transformaciones estén acotadas a su respectiva operación.
+6. **Data Transfer Object (DTO):** Se usan DTOs (`CreateTransactionRequest`, `TransactionResponse`, `CustomerDto`) en la capa REST para no exponer las entidades de base de datos ni los agregados del dominio hacia el cliente.
+7. **Exception Handling / Controller Advice:** Centralización del manejo de excepciones mediante un `@RestControllerAdvice`, permitiendo que el dominio lance excepciones semánticas (`InvalidFormatException`, `MissingFieldException`) que son traducidas automáticamente a códigos HTTP y `response_code` estandarizados.
+
+---
+
+## 🧐 Suposiciones y Decisiones del Negocio
+
+Para el desarrollo del orquestador, se tomaron las siguientes suposiciones basadas en el análisis de los requerimientos:
+
+* **Monto en Centavos:** Como lo dicta el requerimiento, el campo `amount` se recibe y procesa como un número entero largo (`Long` / `BIGINT`) sin separador decimal. Un valor de `150000` representa $1,500.00 en la moneda local.
+* **Transaccionalidad Asíncrona (Estados):** Se asume que el pago a través de proveedores reales no siempre es instantáneo. Por ende, cuando el proveedor aprueba la transacción de entrada, el estado de la transacción en la base de datos queda en `PROCESSING`. Se espera que una futura integración mediante Webhook actualice el estado final a `SUCCESS` o `FAILED`.
+* **Idempotencia:** Se asume que los clientes pueden reintentar la misma transacción en caso de fallos de red. Para prevenir cobros duplicados, se impuso una restricción `UNIQUE` en la base de datos sobre el campo `client_transaction_id`. Si se envía dos veces, el orquestador rechaza la segunda petición.
+* **Fallas del Proveedor (HTTP 200 vs HTTP 500):** Si el proveedor rechaza la transacción (por ejemplo, por fondos insuficientes), la API retorna un **HTTP 200 OK**, ya que la petición y la comunicación se realizaron correctamente. El rechazo se comunica a través del `response_code: "005"` y el estado de la transacción se marca como `FAILED`.
+
+---
+
+## ⚠️ Riesgos Identificados
+
+1. **Cuellos de Botella con Proveedores (Network Latency):** Las integraciones con proveedores de pago externos pueden sufrir alta latencia o timeouts. Si un proveedor tarda demasiado en responder, los hilos de Tomcat podrían saturarse. *Mitigación recomendada:* Implementar Circuit Breakers (ej. Resilience4j) y Timeouts estrictos en las llamadas HTTP salientes.
+2. **Escalabilidad de la Base de Datos:** Si el volumen de transacciones crece de manera exponencial, la tabla `transactions` podría requerir particionamiento (Partitioning) por fechas, así como índices adicionales para acelerar las consultas históricas.
+3. **Pérdida de Transacciones (Downtime del Proveedor):** Si el proveedor de pagos está caído, las transacciones serán rechazadas. *Mitigación recomendada:* Implementar un sistema de colas (ej. Kafka, RabbitMQ) para encolar las transacciones y reintentarlas mediante un proceso de *Retry Policy* (Dead Letter Queues).
+4. **Inconsistencia de Estados:** Si el sistema falla o se reinicia justo después de enviar la petición al proveedor pero *antes* de actualizar el estado en nuestra base de datos. *Mitigación recomendada:* Implementar un *Saga Pattern* o guardar un registro de intención (Outbox Pattern) antes del envío.
+
+---
+
+## 🛡️ Modelo de Integración Continua (CI/CD) y Calidad de Código
+
+El proyecto incluye un pipeline de Integración Continua (CI) implementado con **GitHub Actions** (`.github/workflows/ci.yml`), el cual se dispara automáticamente en cada `push` o `pull_request` hacia las ramas principales.
+
+### Herramientas y Metodologías de Calidad:
+
+1. **Testcontainers (Pruebas de Integración Reales):**
+   No utilizamos bases de datos en memoria (como H2) para las pruebas de persistencia. En su lugar, el pipeline y las pruebas locales levantan un contenedor real de **PostgreSQL** mediante Docker. Esto garantiza que las pruebas de integración validen exactamente el mismo motor de base de datos que se utilizará en producción, incluyendo restricciones complejas como llaves foráneas y *constraints* de unicidad.
+
+2. **Property-Based Testing (jqwik):**
+   Además de las pruebas unitarias convencionales basadas en ejemplos (Example-Based Testing), se implementaron pruebas basadas en propiedades para la lógica de dominio y validación. `jqwik` genera automáticamente miles de casos límite (edge cases), cadenas aleatorias, valores nulos y números negativos para estresar la lógica y garantizar matemáticamente su robustez.
+
+3. **JaCoCo (Métricas de Cobertura Estrictas):**
+   El ciclo de compilación de Maven está configurado con el plugin de JaCoCo para auditar la cobertura de las pruebas. El pipeline está programado para **fallar automáticamente si la cobertura del código baja del 80%**. Esto previene que se integre código nuevo que no esté debidamente testeado. Las entidades, DTOs y clases de configuración fueron excluidas de esta métrica para enfocar la evaluación únicamente en la lógica de negocio y los controladores.
+
+4. **Flyway (Migraciones Controladas):**
+   La evolución del esquema de base de datos está automatizada y versionada a través de scripts SQL (`V1__init.sql`, `V2__...`). Esto previene inconsistencias entre los entornos de desarrollo, testing y producción.
+
 ---
 
 ## ⚙️ Ejecución y Pruebas
